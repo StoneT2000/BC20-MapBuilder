@@ -106,23 +106,22 @@ function saveMap() {
       gameMap.waterArray[locationToIndex(x,y)] = gameMapTiles[y][x].elevation > 0 ? false : true;
     }
   }
-  gameMap.name = "newmap";
+  gameMap.mapName = "newmap";
+  console.log(gameMap.getMapName());
   var bytes = serializeMap(gameMap);
   saveByteArray([bytes], 'newmap.map20');
 }
-var saveByteArray = (function () {
+function saveByteArray(data, name) {
     var a = document.createElement("a");
     document.body.appendChild(a);
     a.style = "display: none";
-    return function (data, name) {
-        var blob = new Blob(data, {type: "octet/stream"}),
-            url = window.URL.createObjectURL(blob);
-        a.href = url;
-        a.download = name;
-        a.click();
-        window.URL.revokeObjectURL(url);
-    };
-}());
+      var blob = new Blob(data, {type: "octet/stream"}),
+          url = window.URL.createObjectURL(blob);
+      a.href = url;
+      a.download = name;
+      a.click();
+      window.URL.revokeObjectURL(url);
+};
 
 
 function dist(x1,y1,x2,y2) {

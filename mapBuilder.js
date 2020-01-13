@@ -7,7 +7,7 @@ var battlecode = require('./battlecode_generated').battlecode;
 
 var data = new Uint8Array(fs.readFileSync('./WaterBot.map20'));
 var buf = new flatbuffers.ByteBuffer(data);
-let gameMap = battlecode.schema.GameMap.getRootAsGameMap(buf)
+let gameMap = battlecode.schema.GameMap.getRootAsGameMap(buf); // raw gamemap
 */
 function serializeMap(map) {
   let builder = new flatbuffers.Builder();
@@ -24,6 +24,7 @@ function serializeMap(map) {
 // map: LiveMap
 function serializeMapWithBuilder(builder, gameMap) {
   let name = builder.createString(gameMap.getMapName());
+  console.log(name);
   let randomSeed = gameMap.getSeed();
   let soupArray = gameMap.getSoupArray();
   let pollutionArray = gameMap.getPollutionArray();
@@ -57,12 +58,16 @@ function serializeMapWithBuilder(builder, gameMap) {
     bodyLocsXs.push(robot.location.x);
     bodyLocsYs.push(robot.location.y);
   }
+  console.log(name, randomSeed, bodyIDs, bodyTeamIDs, bodyTypes, bodyLocsXs, bodyLocsYs);
 
   //what are ArrayUtils.toPrimitive(bodyIDs.toArray(new Integer[bodyIDs.size()]))??
   let robotIDs = battlecode.schema.SpawnedBodyTable.createRobotIDsVector(builder, bodyIDs);//ArrayUtils.toPrimitive(bodyIDs.toArray(new Integer[bodyIDs.size()])));
   let teamIDs = battlecode.schema.SpawnedBodyTable.createTeamIDsVector(builder, bodyTeamIDs);//ArrayUtils.toPrimitive(bodyTeamIDs.toArray(new Byte[bodyTeamIDs.size()])));
   let types = battlecode.schema.SpawnedBodyTable.createTypesVector(builder, bodyTypes); //ArrayUtils.toPrimitive(bodyTypes.toArray(new Byte[bodyTypes.size()])));
-  let locs = battlecode.schema.VecTable.createVecTable(builder, bodyLocsXs, bodyLocsYs);
+  let locs = battlecode.schema.VecTable.createVecTable(builder,
+            battlecode.schema.VecTable.createXsVector(builder, bodyLocsXs),
+            battlecode.schema.VecTable.createYsVector(builder, bodyLocsYs)
+            );
           //battlecode.schema.VecTable.createXsVector(builder, ArrayUtils.toPrimitive(bodyLocsXs.toArray(new Integer[bodyLocsXs.size()]))),
           //battlecode.schema.VecTable.createYsVector(builder, ArrayUtils.toPrimitive(bodyLocsYs.toArray(new Integer[bodyLocsYs.size()]))));
   battlecode.schema.SpawnedBodyTable.startSpawnedBodyTable(builder);
@@ -97,7 +102,7 @@ function deserializeRawMap(raw) {
     let height = raw.maxCorner().y() - raw.minCorner().y();
     let origin = {x: raw.minCorner().x(), y: raw.minCorner().y()};//new MapLocation((int) raw.minCorner().x(), (int) raw.minCorner().y());
     let seed = raw.randomSeed();
-    let rounds = 100000; //GameConstants.GAME_MAX_NUMBER_OF_ROUNDS;
+    let rounds = 10000; //GameConstants.GAME_MAX_NUMBER_OF_ROUNDS;
     let mapName = raw.name();
     let initialWater = raw.initialWater();
     let soupArray = []; //new int[width * height];
@@ -147,6 +152,7 @@ soupArray, pollutionArray, waterArray, dirtArray, initialWater) {
   }
 
   // invariant: bodies is sorted by id
+  // TODO: Maybe wrong
   this.initialBodies = this.initialBodies.sort(function(a, b) {
     return a.getID() - b.getID();
   });
@@ -167,10 +173,10 @@ soupArray, pollutionArray, waterArray, dirtArray, initialWater) {
     return this.height;
   }
   this.getOrigin =  function () {
-    return origin;
+    return this.origin;
   }
   this.getMapName = function () {
-      return mapName;
+      return this.mapName;
   }
 }
 function initInitialBodiesFromSchemaBodyTable(bodyTable, initialBodies) {
@@ -213,12 +219,15 @@ TeamMapping.team = function(i) {
 TeamMapping.id = function(i) {
   return i;
 }
+/*
+// bug with deserialization or serialization, the original bytes and new ones after de and serializing are different a little
+let deserializedMap = deserializeRawMap(gameMap)
 
-//let deserializedMap = deserializeRawMap(gameMap)
-//let bytes = serializeMap(deserializedMap);
+// probably bug with serialization
+let bytes = serializeMap(deserializedMap);
 //console.log(bytes, bytes.length);
 //console.log(buf.length);
-/*
+
 var buf2 = new flatbuffers.ByteBuffer(bytes);
 let gameMap2 = battlecode.schema.GameMap.getRootAsGameMap(buf2);
 let deserializedMap2 = deserializeRawMap(gameMap2);
