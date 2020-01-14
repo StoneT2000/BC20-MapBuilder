@@ -37,11 +37,10 @@
 <body>
   <div class="container-fluid" style='padding-top: 20px;'>
     <!--All page content goes here -->
-    <h1>BC20 Map Generator</h1>
+    <h1>Battlecode 2020 Map Builder</h1>
     <hr>
     <div class="mainContent">
       <div class='row'>
-        <input type="file" id='file_input'>
         <div class='col-md-12'>
           <div class="map">
             <!--
@@ -51,20 +50,58 @@
             </div><div class="tile" id="11">
             </div>-->
           </div>
-          <div class='stats'>
-            <table>
-              <tr>
-                <td>Map Size</td>
-                <td id='mapSize'>32x32</td>
-              </tr>
-              <tr>
-                <td>Number Castles</td>
-                <td id='castleCount'>-1</td>
-              </tr>
-            </table>
-          </div>
         </div>
 
+      </div>
+      <div class='row downloadWrapper'>
+        <div class='download'>
+          <button class='btn btn-primary' id='downloadMap'>Download map</button>
+          <label id='downloadInbetween'>or Upload Battlecode 2020 map</label>
+          <input type="file" id='file_input'>
+        </div>
+      </div>
+      <div class='row mapInfo'>
+        <table>
+          <th>Size</th>
+          <th>Symmetry</th>
+          <tr>
+            <td id='mapsize'>32x32</td>
+            <td id='mapsymmetry'>Rotation</td>
+          </tr>
+        </table>
+      </div>
+      <div class='row controls'>
+        <div class='rowLabel' >Brush Controls</div>
+        <div class='rowcontent'>
+          <label>Brush Size</label>
+          <input type='number' id='brushsize'>
+          <label>Brush Magnitude</label>
+          <input type='number' id='brushmagnitude'>
+          <label>Brush Type</label>
+          <select id='brushType'>
+            <option>Elevate</option>
+            <option>Lower</option>
+            <option>SoupUp</option>
+            <option>SoupDown</option>
+            <option>ToggleWater</option>
+            <option>MoveRedHQ</option>
+            <option>MoveBlueHQ</option>
+          </select>
+        </div>
+      </div>
+      <div class='row createMap'>
+        <div class='rowLabel' >Create Map </div>
+        <div class='rowcontent'>
+          <label>Width</label><input type='number' id='inputWidth'>
+          <label>Height</label><input type='number' id='inputHeight'>
+          <label>Symmetry</label>
+          <select id='mapSymmetryChoice'>
+            <option>Rotation</option>
+            <option>Vertical</option>
+            <option>Horizontal</option>
+          </select>
+          <button class='btn btn-primary' id='createMap'>Create map</button>
+        </div>
       </div>
     </div>
   </div>

@@ -128,8 +128,8 @@ function deserializeRawMap(raw) {
 }
 
 // initialBodies = RobotInfo[]
-function LiveMap(width, height, origin, seed, rounds, mapName, initialBodies,
-soupArray, pollutionArray, waterArray, dirtArray, initialWater) {
+function LiveMap(width, height, origin, seed, rounds, mapName, initialBodies = [],
+soupArray = [], pollutionArray = [], waterArray = [], dirtArray = [], initialWater = 0) {
   this.width = width;
   this.height = height;
   this.origin = origin;

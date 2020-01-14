@@ -1,3 +1,61 @@
+.controls, .createMap {
+  text-align: center;
+  width: 100%;
+  border-top: 2px solid #343a40;
+}
+.createMap {
+  border-bottom: 2px solid #343a40;
+}
+.rowcontent {
+  height: 30px;
+  padding: 20px;
+}
+.rowLabel {
+  width: 180px;
+  font-weight: 500;
+  font-size: 22px;
+  background-color: #343a40;
+  height: 80px;
+  color:white;
+  line-height: 80px;
+  display: inline-block;
+}
+.downloadWrapper {
+  text-align: center;
+}
+#downloadInbetween {
+  margin: 0px;
+  line-height: 40px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+#file_input {
+  border: 1px solid rgb(220,220,220);
+  padding: 5px;
+}
+#downloadMap {
+  cursor: pointer;
+}
+.download {
+  margin: auto;
+  margin-top: 20px;
+  text-align: center;
+}
+.controls label, .createMap label {
+  margin-left: 20px;
+  margin-right: 5px;
+  margin-top: 7px;
+}
+.controls input, .createMap input {
+  width: 80px;
+}
+.controls select, .createMap select {
+  height: 24px;
+  width: 130px;
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-top: 8px;
+}
 .tile {
   width:20px;
   height:20px;
@@ -5,6 +63,7 @@
   display:inline-block;
   border: 0.5px solid #e8efe8;
   transition: width 0.2s, height 0.2s, border 0.2s;
+  cursor: crosshair
 }
 .soup {
   width: 5px;
@@ -12,20 +71,15 @@
   margin: auto;
   background-color: white;
 }
-.tileHover::after {
-  content:'';
-  width: 20px;
-  height:20px;
-  border: 1px solid yellow;
-  border-radius:50%;
-  position: absolute;
-  left:10px;
+.mapInfo {
+  margin-bottom: 20px;
 }
 .map {
   width: 840px;
   height:840px;
   position: relative;
   margin: auto;
+  cursor: crosshair;
 }
 
 table {
