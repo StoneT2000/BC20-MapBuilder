@@ -13,6 +13,7 @@ var SOUPDOWN = 3;
 var TOGGLEWATER = 4;
 var MOVEREDHQ = 5;
 var MOVEBLUEHQ = 6;
+var COW = 7;
 
 // brush look
 var DIAMOND = 0;
@@ -82,8 +83,9 @@ function initializeEmptyMap(width, height, symmetry) {
 
 
 }
-function addCow() {
-
+function addCow(loc) {
+  gameMap.initialBodies.push(new RobotInfo(bodyID++, 0, 9, loc));
+  return gameMap.initialBodies[gameMap.initialBodies.length - 1];
 }
 initializeEmptyMap(33, 33, ROTATION);
 async function readFile() {
@@ -103,6 +105,7 @@ async function readFile() {
 }
 $(document).ready(function () {
   $("#brushType").val("Elevate");
+  $("#newMapName").val("newmap");
   $("#brushmagnitude").val(AMOUNT);
   $("#brushsize").val(BRUSHSIZE);
   $(function () {
@@ -115,7 +118,7 @@ $(document).ready(function () {
     });
   })
   $("#downloadMap").on('click', function(){
-    saveMap();
+    saveMap($("#newMapName").val());
   });
   $("#createMap").on('click', function() {
     let symChoice = $("#mapSymmetryChoice").val();
@@ -158,10 +161,13 @@ $(document).ready(function () {
         brushType = TOGGLEWATER;
         break;
       case "MoveRedHQ":
-      brushType = MOVEREDHQ;
+        brushType = MOVEREDHQ;
         break;
       case "MoveBlueHQ":
-      brushType = MOVEBLUEHQ;
+        brushType = MOVEBLUEHQ;
+        break;
+      case "ToggleCow":
+        brushType = COW;
         break;
     }
 
@@ -229,7 +235,7 @@ function loadMapToDisplay(map) {
     $('[data-toggle="tooltip"]').tooltip()
   });
 }
-function saveMap() {
+function saveMap(name) {
   // go through edits on gameMapTiles
   // and put themin gameMap2
   for (let y = 0; y < MAP_HEIGHT; y++) {
@@ -239,10 +245,9 @@ function saveMap() {
       gameMap.waterArray[locationToIndex(x,y)] = gameMapTiles[y][x].water;
     }
   }
-  gameMap.mapName = "newmap";
-  console.log(gameMap.getMapName());
+  gameMap.mapName = name;
   var bytes = serializeMap(gameMap);
-  saveByteArray([bytes], 'newmap.map20');
+  saveByteArray([bytes], name + '.map20');
 }
 function saveByteArray(data, name) {
     var a = document.createElement("a");
@@ -264,7 +269,6 @@ function dist2(x1,y1,x2,y2) {
   return (x2-x1)*(x2-x1) + (y2 - y1)*(y2-y1);
 }
 function changeTile(y,x, calledBySelf = false) {
-  console.log("change tile " + x + ", " + y);
   switch (brushType) {
     case ELEVATE:
       bfs(x,y,BRUSHSIZE, function(tile) {
@@ -317,6 +321,29 @@ function changeTile(y,x, calledBySelf = false) {
       gameMap.blueHQ.location.y = y;
       updateTile(y, x);
       return;
+      break;
+    case COW:
+      let body = gameMapTiles[y][x].body;
+      if (body) {
+        if (body.type === 9) {
+          // remove dat cow!
+          let removedID = gameMapTiles[y][x].body.ID;
+
+          for (let i = 0; i < gameMap.initialBodies.length; i++) {
+            let body = gameMap.initialBodies[i];
+            if (body.ID == removedID) {
+              gameMap.initialBodies.splice(i,1);
+              break;
+            }
+          }
+          gameMapTiles[y][x].body = null;
+        }
+      }
+      else {
+        // add dat cow!
+        let newCow = addCow({x: x, y: y});
+        gameMapTiles[y][x].body = newCow;
+      }
       break;
   }
   updateTile(y, x);

@@ -55,11 +55,31 @@
       </div>
       <div class='row downloadWrapper'>
         <div class='download'>
-          <button class='btn btn-primary' id='downloadMap'>Download map</button>
+          <button class='btn btn-primary' id='' data-toggle="modal" data-target="#exampleModal">Download map</button>
           <label id='downloadInbetween'>or Upload Battlecode 2020 map</label>
           <input type="file" id='file_input'>
         </div>
       </div>
+      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <label>Enter new map name here: </label>
+            <input id='newMapName'>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="downloadMap">Download Map</button>
+          </div>
+        </div>
+      </div>
+    </div>
       <div class='row mapInfo'>
         <table>
           <th>Size</th>
@@ -84,6 +104,7 @@
             <option>SoupUp</option>
             <option>SoupDown</option>
             <option>ToggleWater</option>
+            <option>ToggleCow</option>
             <option>MoveRedHQ</option>
             <option>MoveBlueHQ</option>
           </select>
