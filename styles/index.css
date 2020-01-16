@@ -1,10 +1,23 @@
+#brushRange {
+  position: absolute;
+  border: 1px solid black;
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  z-index: -1;
+}
 .controls, .createMap {
   text-align: center;
   width: 100%;
   border-top: 2px solid #343a40;
 }
-.createMap {
+.commands {
+  border-top: 2px solid #343a40;
+  font-size: 24px;
   border-bottom: 2px solid #343a40;
+}
+.commands p {
+  margin-left: 20px;
 }
 .rowcontent {
   height: 30px;
@@ -66,9 +79,9 @@
   cursor: crosshair
 }
 .soup {
-  width: 5px;
-  height: 5px;
-  margin: auto;
+  width: 7px;
+  height: 7px;
+  margin: 6px;
   background-color: white;
 }
 .mapInfo {

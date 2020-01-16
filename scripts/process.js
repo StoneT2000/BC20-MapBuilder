@@ -43,6 +43,50 @@ var MAP_SEED = 9999;
 var bodyID = 0;
 var MAP_RED_HQ;
 var MAP_BLUE_HQ;
+
+
+var historyList = [];
+var historyStateIndex = -1;
+function addHistory() {
+
+  historyList.splice(historyStateIndex);
+
+  historyStateIndex++;
+  var gameMapCopy = [];
+  for (let i = 0; i < gameMapTiles.length; i++) {
+
+    gameMapCopy.push([]);
+    for (let j = 0; j < gameMapTiles.length; j++) {
+      let tile = gameMapTiles[i][j];
+      gameMapCopy[gameMapCopy.length - 1].push({body: tile.body, soup: tile.soup, water: tile.water, elevation: tile.elevation})
+    }
+  }
+
+  historyList.push({gameMap: Object.assign({}, gameMap), gameMapTiles:gameMapCopy});
+}
+function undo() {
+  historyStateIndex--;
+  if (historyStateIndex < 0) {
+    historyStateIndex++;
+  }
+  else {
+    console.log(historyStateIndex, "UNDOING");
+    gameMap = historyList[historyStateIndex].gameMap
+    gameMapTiles = [...historyList[historyStateIndex].gameMapTiles];
+    loadMapToDisplay(gameMap, gameMapTiles);
+  }
+}
+function redo() {
+  historyStateIndex++;
+  if (historyStateIndex >= historyList.length) {
+    historyStateIndex--;
+  }
+  else {
+    gameMap = historyList[historyStateIndex].gameMap;
+    gameMapTiles = [...historyList[historyStateIndex].gameMapTiles];
+    loadMapToDisplay(gameMap, gameMapTiles);
+  }
+}
 //var initialBodies = [];
 var gameMap;
 function addHQ(team, loc) {
@@ -104,6 +148,22 @@ async function readFile() {
   });
 }
 $(document).ready(function () {
+  $(document).on('mousemove', function(e) {
+    $('#brushRange').css({
+      left: e.pageX - BRUSHSIZE * 10,
+      top: e.pageY - BRUSHSIZE * 10
+    });
+  });
+  $(document).on('keypress', function(e) {
+    if (e.key == 'z') {
+      undo();
+    }
+    else if (e.key == 'r') {
+      redo();
+    }
+  });
+  $("#inputWidth").val(32);
+  $("#inputHeight").val(32);
   $("#brushType").val("Elevate");
   $("#newMapName").val("newmap");
   $("#brushmagnitude").val(AMOUNT);
@@ -115,10 +175,23 @@ $(document).ready(function () {
     readFile().then(function() {
       console.log("Loaded map");
       loadMapToDisplay(gameMap);
+      addHistory();
     });
   })
+  $("#downloadMapPrebtn").on('click', function() {
+  });
   $("#downloadMap").on('click', function(){
-    saveMap($("#newMapName").val());
+    let sym = verifySymmetrical();
+    if (sym) {
+      saveMap($("#newMapName").val());
+    }
+    else {
+      var confirm = confirm("Are you sure you want to download a probably asymmetrical map?");
+      if (confirm) {
+        saveMap($("#newMapName").val());
+      }
+    }
+
   });
   $("#createMap").on('click', function() {
     let symChoice = $("#mapSymmetryChoice").val();
@@ -140,9 +213,11 @@ $(document).ready(function () {
     $("#mapsize").text(newWidth + "x" + newHeight);
     initializeEmptyMap(newWidth, newHeight, mapSymmetry);
     loadMapToDisplay(gameMap);
+    addHistory();
   });
   // [] is initialBodies
   loadMapToDisplay(gameMap);
+  addHistory();
   $("#brushType").on("change", function() {
     switch ($("#brushType").val()) {
       case "Elevate":
@@ -180,30 +255,36 @@ $(document).ready(function () {
   });
 
 });
-function loadMapToDisplay(map) {
+function loadMapToDisplay(map, mapTiles = null) {
   // clear previous map
+  $(".tooltip").remove();
   $(".map").html("<div class='botDisplay'><div class='castle'></div></div>");
   MAP_HEIGHT=map.height;
   MAP_WIDTH=map.width;
 
   // load most map data into gameMapTiles
-  for (let y = MAP_HEIGHT - 1; y >= 0; y--) {
-    gameMapTiles[y] = [];
-    for (let x = 0; x < MAP_WIDTH; x++) {
-      gameMapTiles[y].push({body: null, elevation: map.dirtArray[locationToIndex(x,y)], soup: map.soupArray[locationToIndex(x,y)], element: null, water: map.waterArray[locationToIndex(x,y)]});
+  if (mapTiles == null) {
+    for (let y = MAP_HEIGHT - 1; y >= 0; y--) {
+      gameMapTiles[y] = [];
+      for (let x = 0; x < MAP_WIDTH; x++) {
+        gameMapTiles[y].push({body: null, elevation: map.dirtArray[locationToIndex(x,y)], soup: map.soupArray[locationToIndex(x,y)], water: map.waterArray[locationToIndex(x,y)]});
+      }
+    }
+    // load bodies (units)
+    for (let body of map.initialBodies) {
+      gameMapTiles[body.location.y][body.location.x].body = body;
+      if (body.type == 0) {
+        if (body.team == BLUETEAM) {
+          gameMap.blueHQ = body;
+        }
+        else if (body.team == REDTEAM){
+          gameMap.redHQ = body;
+        }
+      }
     }
   }
-  // load bodies (units)
-  for (let body of map.initialBodies) {
-    gameMapTiles[body.location.y][body.location.x].body = body;
-    if (body.type == 0) {
-      if (body.team == BLUETEAM) {
-        gameMap.blueHQ = body;
-      }
-      else if (body.team == REDTEAM){
-        gameMap.redHQ = body;
-      }
-    }
+  else {
+    gameMapTiles = mapTiles;
   }
 
   // load map colors and hovers and what not
@@ -216,7 +297,6 @@ function loadMapToDisplay(map) {
     tileElement.css('background-color', DIRTCOLOR);
     //data-toggle='tooltip' data-trigger='hover' data-title='test'
     let desc = 'E: ' + map.dirtArray[locationToIndex(x,y)] + ' | Soup: ' + map.soupArray[locationToIndex(x,y)];
-    gameMapTiles[y][x].element = tileElement;
     tileElement.attr('data-toggle','tooltip');
     tileElement.attr('data-trigger','hover');
     tileElement.attr('data-title',desc + ' (' + x + ', ' + y + ')');
@@ -268,7 +348,7 @@ function dist(x1,y1,x2,y2) {
 function dist2(x1,y1,x2,y2) {
   return (x2-x1)*(x2-x1) + (y2 - y1)*(y2-y1);
 }
-function changeTile(y,x, calledBySelf = false) {
+function changeTile(y,x,calledBySelf = false) {
   switch (brushType) {
     case ELEVATE:
       bfs(x,y,BRUSHSIZE, function(tile) {
@@ -349,6 +429,7 @@ function changeTile(y,x, calledBySelf = false) {
   updateTile(y, x);
   if (!calledBySelf) {
     changeSymmetricTile(y,x);
+    addHistory();
   }
 }
 function changeSymmetricTile(y,x) {
@@ -391,34 +472,34 @@ function bfs(x, y, distance, func) {
 }
 
 function getDirtColor(elevation) {
-  return 'rgb(' + (35 + (10*elevation))+', 180, 30)';
+  return 'rgb(' + (35 + (18*elevation))+', 180, 30)';
 }
 function updateTile(y, x) {
   let tile = gameMapTiles[y][x];
   let unitInfo = "";
-
+  let tileElement = $("#" + x +"_"+ y);
   if (tile.body) {
     if (tile.body.type === 0) {
       if (tile.body.team == REDTEAM) {
-          tile.element.css("background-color", REDTEAM_COLOR);
+          tileElement.css("background-color", REDTEAM_COLOR);
           unitInfo = "Red HQ | "
       }
       else {
-        tile.element.css("background-color", BLUETEAM_COLOR);
+        tileElement.css("background-color", BLUETEAM_COLOR);
         unitInfo = "Blue HQ | "
       }
     }
     else if (tile.body.type === 9) {
-        tile.element.css("background-color", "white");
+        tileElement.css("background-color", "white");
         unitInfo = "Some Cow | "
     }
   }
   else {
     if (tile.water) {
-      tile.element.css("background-color", WATERCOLOR);
+      tileElement.css("background-color", WATERCOLOR);
     }
     else {
-      tile.element.css("background-color", getDirtColor(tile.elevation));
+      tileElement.css("background-color", getDirtColor(tile.elevation));
     }
   }
   if (tile.soup > 0) {
@@ -429,7 +510,6 @@ function updateTile(y, x) {
   }
 
   let desc = unitInfo + 'E: ' + tile.elevation + ' | Soup: ' + tile.soup;
-  let tileElement = tile.element;
   //tileElement.attr('data-toggle','tooltip');
   //tileElement.attr('data-trigger','hover');
   tileElement.attr('data-original-title',desc + ' (' + x + ', ' + y + ')');
@@ -440,4 +520,24 @@ function updateTile(y, x) {
 }
 function locationToIndex(x, y) {
     return x + y * MAP_WIDTH;
+}
+
+// returns true if map is symmetrical
+function verifySymmetrical() {
+  for (let y = 0; y < gameMapTiles.length; y++) {
+    for (let x = 0; x < gameMapTiles[y].length; x++) {
+      let t = gameMapTiles[y][x];
+      let t2 = gameMapTiles[gameMapTiles.length - y - 1][gameMapTiles[x].length - 1 - x];
+      if (t.soup != t2.soup || t.water != t2.water || t.elevation != t2.elevation) {
+        if (t.body == null && t2.body != null) {
+          return {x:x, y:y};
+        }
+        else if (t.body != null && t2.body != null && t.body.type == t2.body) {
+          return {x:x, y:y};
+        }
+
+      }
+    }
+  }
+  return true;
 }

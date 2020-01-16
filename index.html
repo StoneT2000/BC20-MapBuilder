@@ -53,75 +53,83 @@
         </div>
 
       </div>
-      <div class='row downloadWrapper'>
-        <div class='download'>
-          <button class='btn btn-primary' id='' data-toggle="modal" data-target="#exampleModal">Download map</button>
-          <label id='downloadInbetween'>or Upload Battlecode 2020 map</label>
-          <input type="file" id='file_input'>
-        </div>
-      </div>
-      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <label>Enter new map name here: </label>
-            <input id='newMapName'>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" id="downloadMap">Download Map</button>
+      <div style="z-index: 1">
+        <div class='row downloadWrapper'>
+          <div class='download'>
+            <button class='btn btn-primary' id='' data-toggle="modal" data-target="#exampleModal" id='downloadMapPrebtn'>Download map</button>
+            <label id='downloadInbetween'>or Upload Battlecode 2020 map</label>
+            <input type="file" id='file_input'>
           </div>
         </div>
-      </div>
-    </div>
-      <div class='row mapInfo'>
-        <table>
-          <th>Size</th>
-          <th>Symmetry</th>
-          <tr>
-            <td id='mapsize'>32x32</td>
-            <td id='mapsymmetry'>Rotation</td>
-          </tr>
-        </table>
-      </div>
-      <div class='row controls'>
-        <div class='rowLabel' >Brush Controls</div>
-        <div class='rowcontent'>
-          <label>Brush Size</label>
-          <input type='number' id='brushsize'>
-          <label>Brush Magnitude</label>
-          <input type='number' id='brushmagnitude'>
-          <label>Brush Type</label>
-          <select id='brushType'>
-            <option>Elevate</option>
-            <option>Lower</option>
-            <option>SoupUp</option>
-            <option>SoupDown</option>
-            <option>ToggleWater</option>
-            <option>ToggleCow</option>
-            <option>MoveRedHQ</option>
-            <option>MoveBlueHQ</option>
-          </select>
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <label>Enter new map name here: </label>
+              <input id='newMapName'>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" id="downloadMap">Download Map</button>
+            </div>
+          </div>
         </div>
       </div>
-      <div class='row createMap'>
-        <div class='rowLabel' >Create Map </div>
-        <div class='rowcontent'>
-          <label>Width</label><input type='number' id='inputWidth'>
-          <label>Height</label><input type='number' id='inputHeight'>
-          <label>Symmetry</label>
-          <select id='mapSymmetryChoice'>
-            <option>Rotation</option>
-            <option>Vertical</option>
-            <option>Horizontal</option>
-          </select>
-          <button class='btn btn-primary' id='createMap'>Create map</button>
+        <div class='row mapInfo'>
+          <table>
+            <th>Size</th>
+            <th>Symmetry</th>
+            <tr>
+              <td id='mapsize'>32x32</td>
+              <td id='mapsymmetry'>Rotation</td>
+            </tr>
+          </table>
+        </div>
+        <div class='row controls'>
+          <div class='rowLabel' >Brush Controls</div>
+          <div class='rowcontent'>
+            <label>Brush Size</label>
+            <input type='number' id='brushsize'>
+            <label>Brush Magnitude</label>
+            <input type='number' id='brushmagnitude'>
+            <label>Brush Type</label>
+            <select id='brushType'>
+              <option>Elevate</option>
+              <option>Lower</option>
+              <option>SoupUp</option>
+              <option>SoupDown</option>
+              <option>ToggleWater</option>
+              <option>ToggleCow</option>
+              <option>MoveRedHQ</option>
+              <option>MoveBlueHQ</option>
+            </select>
+          </div>
+        </div>
+        <div class='row createMap'>
+          <div class='rowLabel' >Create Map </div>
+          <div class='rowcontent'>
+            <label>Width</label><input type='number' id='inputWidth'>
+            <label>Height</label><input type='number' id='inputHeight'>
+            <label>Symmetry</label>
+            <select id='mapSymmetryChoice'>
+              <option>Rotation</option>
+              <option>Vertical</option>
+              <option>Horizontal</option>
+            </select>
+            <button class='btn btn-primary' id='createMap'>Create map</button>
+          </div>
+        </div>
+        <div class='row commands'>
+          <div class='rowLabel' >Commands</div>
+          <div class='rowcontent'>
+            <p>Undo: z | Redo: r</p>
+          </div>
         </div>
       </div>
     </div>
