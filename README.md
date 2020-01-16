@@ -1,5 +1,5 @@
 # BC2020-Map-Generator
-A map builder created for Battlecode 2020
+A map builder created for Battlecode 2020, go here: http://stonet2000.github.io/BC20-MapBuilder, to try it out
 
 Use the brushes to edit the map to your liking. Move HQ positions, add water, elevate the land and more!
 
